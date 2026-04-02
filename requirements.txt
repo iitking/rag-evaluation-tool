@@ -1,0 +1,3 @@
+# Dependencies for RAG Evaluation & Optimization Tool (FastAPI + Pytest)
+-r requirements-backend.txt
+pytest

@@ -123,11 +123,6 @@ async def optimize(
             400, f"Unsupported file type '{ext}'. Please upload one of: {allowed}"
         )
 
-    if not config.GROQ_API_KEY:
-        raise HTTPException(
-            500, "GROQ_API_KEY is not set. Add it to your .env file (see .env.example)."
-        )
-
     # Validate inputs
     try:
         question_items = parse_questions(questions)
@@ -149,6 +144,12 @@ async def optimize(
     retrieval_k = top_k or config.TOP_K
     if not 1 <= retrieval_k <= 20:
         raise HTTPException(400, "top_k must be between 1 and 20.")
+
+    # Checked AFTER input validation so bad requests always get a 400 (even without an API key, e.g. in CI)
+    if not config.GROQ_API_KEY:
+        raise HTTPException(
+            500, "GROQ_API_KEY is not set. Add it to your .env file (see .env.example)."
+        )
 
     gen_model = generator_model.strip() if generator_model and generator_model.strip() else None
     jdg_model = judge_model.strip() if judge_model and judge_model.strip() else None

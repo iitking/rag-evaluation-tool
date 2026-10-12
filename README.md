@@ -38,29 +38,29 @@ This tool automates scientific comparisons so you can choose chunk sizes, overla
 
 ## 🏗️ Architecture
 
+```mermaid
+flowchart TD
+    Doc["User Document (.pdf, .txt, .md) + Questions<br/>(with optional expected phrase)"] --> Server["FastAPI Unified Server (Port 8000)"]
+    
+    Server --> UI["Modern Web UI (Tailwind + Plotly)<br/>(/, /static)"]
+    Server --> API["REST API Endpoints<br/>(/optimize, /config, /sample)"]
+    
+    subgraph ParallelExperiments ["Parallel RAG Execution Engine"]
+        direction TB
+        StratA["Strategy A × Embedder 1 (Isolated Chroma Collection)"]
+        StratB["Strategy B × Embedder 2 (Isolated Chroma Collection)"]
+        Pipeline["Split ➔ Embed ➔ Retrieve Top-K ➔ Groq LLM Answer ➔ LLM Judge Score"]
+        
+        StratA --> Pipeline
+        StratB --> Pipeline
+    end
+    
+    API --> StratA
+    API --> StratB
+    
+    Pipeline --> Metrics["Aggregated Performance Metrics<br/>(Relevance, Faithfulness, Hit-Rate, Latency, Token Usage)"]
+    Metrics --> Exports["Leaderboard Table, Radar Chart, Pareto Frontier, Side-by-Side Inspector, Markdown/CSV Export"]
 ```
-User Document (.pdf, .txt, .md) + Questions (with optional expected phrase)
-                             │
-            FastAPI Unified Server (Port 8000)
-    ┌────────────────────────┴────────────────────────┐
-    │                                                 │
-    ▼                                                 ▼
-Modern Web UI (Tailwind + Plotly)              REST API Endpoints
-(/, /static)                                   (/optimize, /config, /sample)
-                                                      │
-           ┌──────────────────────────────────────────┘
-           │
-           ├─► [Strategy A × Embedder 1] (Isolated Chroma Collection)
-           ├─► [Strategy B × Embedder 2] (Isolated Chroma Collection)
-           │     └─► Split -> Embed -> Retrieve Top-K -> Groq LLM Answer -> LLM Judge Score
-           │
-           ▼
-  Aggregated Performance Metrics (Relevance, Faithfulness, Hit-Rate, Latency, Token Usage)
-           │
-           ▼
-  Leaderboard Table, Radar Chart, Pareto Frontier, Side-by-Side Inspector, Markdown/CSV Export
-```
-
 ---
 
 ## 🛠️ Tech Stack
